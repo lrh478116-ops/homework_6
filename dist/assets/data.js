@@ -11,7 +11,7 @@ window.ATLAS = {
     title: '石油勘探开发的智能化可能性地图',
     tagline: '按石油作业链条逐环节展示可被深度学习改造的候选场景，标注技术介入点、数据条件与难度等级。',
     version: 'v1.0',
-    updated: '2026-10',
+    updated: '2026-11-05',
     upstreamNote: '覆盖地质勘察至炼化的 13 个环节；已接入案例的场景可查看专业背景、流程与交互演示。',
     email: 'atlas@example.com'
   },

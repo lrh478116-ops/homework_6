@@ -199,7 +199,7 @@
       '<div class="comp-bar">' + compBar + '</div>' +
       '<div class="comp-legend">' + compLegend + '</div>' +
       '</div>' +
-      '<div class="spec-f"><span>数据截至 2026-10</span><span>教学用途</span></div>' +
+      '<div class="spec-f"><span>数据截至 2026-11-05</span><span>教学用途</span></div>' +
       '</aside>' +
 
       '</div></div></section>' +
