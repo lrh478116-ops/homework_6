@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>运输智能化案例交互演示</title>
+  <link rel="stylesheet" href="demo.css">
+</head>
+<body>
+  <main class="demo-shell">
+    <header class="demo-head">
+      <div>
+        <p class="eyebrow">固定种子 · 教学合成数据 · 浏览器本地计算</p>
+        <h1 id="title">案例演示</h1>
+        <p id="subtitle" class="subtitle"></p>
+      </div>
+      <span class="scope-badge">非现场性能结论</span>
+    </header>
+
+    <section class="demo-grid">
+      <aside class="controls" aria-label="实验控制">
+        <h2>实验控制</h2>
+        <div id="controls"></div>
+        <button id="run" type="button">重新计算</button>
+        <p class="control-note">改变参数后，图表与指标均由当前数据重新计算，不读取预设答案。</p>
+      </aside>
+
+      <div class="workbench">
+        <div id="metrics" class="metrics" aria-live="polite"></div>
+        <section class="chart-card">
+          <div class="chart-head"><h2 id="chart-title">数据与模型输出</h2><div id="legend" class="legend"></div></div>
+          <div id="chart" class="chart" role="img" aria-label="交互计算结果图"></div>
+        </section>
+        <section class="explain-card">
+          <h2>从石油场景到智能化决策</h2>
+          <div id="explain" class="explain"></div>
+        </section>
+      </div>
+    </section>
+  </main>
+  <script src="config.js"></script>
+  <script src="demo.js"></script>
+</body>
+</html>

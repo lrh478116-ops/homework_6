@@ -1,0 +1,20 @@
+{
+  "id":"pipeline-corrosion-assessment","sceneId":"t2","title":"管道腐蚀智能评估：多源特征风险分区","version":"1.0.0","updated":"2026-11-05","methods":["cv","ts"],
+  "tabs":{"background":{"label":"专业背景","lede":"管道腐蚀评估的核心不是“看见锈”，而是把壁厚损失、缺陷形态、环境和服役信息转成可复核的检验优先级。",
+    "judge":[{"label":"石油对象","value":"管道壁厚与缺陷"},{"label":"AI 任务","value":"风险排序"},{"label":"决策输出","value":"复检优先级"},{"label":"证据边界","value":"非失效概率"}],
+    "sections":[
+      {"no":1,"en":"WALL LOSS","title":"壁厚损失如何影响承载余量","html":"<p>腐蚀让局部壁厚降低，环向应力相对于剩余截面增大。缺陷深度、长度与管径、材料共同决定剩余强度，单一颜色图不能替代规范计算。</p>","visual":{"type":"layers","items":["原始壁厚","均匀腐蚀","局部点蚀","剩余承载余量"]}},
+      {"no":2,"en":"DATA FUSION","title":"为什么需要多源特征","html":"<p>内检测给出几何缺陷，土壤湿度和阴保状态解释外腐蚀环境，服役年限提供暴露时间。它们描述的是不同因果环节。</p>","visual":{"type":"fusion","items":["内检测壁厚","环境/阴保","服役与维修史","管段风险"]}},
+      {"no":3,"en":"RISK MAP","title":"智能模型适合做排序而不是越权定级","html":"<p>模型可快速筛出高风险单元并给出风险热图，工程师再按完整性管理流程安排复检、开挖和剩余强度评价。</p>","visual":{"type":"flow","items":["缺陷单元","风险概率","空间聚合","复检清单"]}},
+      {"no":4,"en":"BOUNDARY","title":"不确定性必须与结果一起展示","html":"<p>检测误差、特征缺失和分布变化会改变排序。案例提供“仅壁厚”反事实，检查环境特征是否真实进入结果。</p>","visual":{"type":"boundary","items":["可验证：特征影响排序","未验证：真实失效概率","需补充：规范校核与复检"]}}
+    ]},
+    "workflow":{"label":"案例流程","title":"从内检测记录到腐蚀风险图","lead":["风险图是巡检资源配置的入口，不是自动放行结论。"],"stats":[["空间单元","32 段"],["特征路径","多源融合"],["负向控制","仅壁厚"]],
+      "steps":[
+        {"name":"统一管段坐标","role":"数据工程","do":"按里程桩号合并内检测、环境与维修记录。","effect":"同一单元的特征可追溯。","trap":"不同年份里程基准错位。","visual":{"input":"多源台账","process":"里程对齐","output":"管段特征表"}},
+        {"name":"构造腐蚀特征","role":"完整性管理","do":"计算壁厚损失率、缺陷密度、湿度和服役年限。","effect":"保留物理含义与量纲。","trap":"把缺测值直接当零风险。","visual":{"input":"检测与环境数据","process":"特征工程","output":"缺陷向量"}},
+        {"name":"估计风险并分区","role":"智能模型","do":"多特征模型输出单元风险，再映射为热图。","effect":"高风险区段一眼可见。","trap":"概率未经校准却解释为失效频率。","visual":{"input":"缺陷向量","process":"风险模型","output":"风险概率"}},
+        {"name":"复检与规范校核","role":"工程决策","do":"对高风险段安排复检和剩余强度评价。","effect":"AI 输出进入可执行工单。","trap":"只保留热图，不记录处置闭环。","visual":{"input":"风险排序","process":"专家 + 规范校核","output":"复检清单"}}
+      ],"metrics":{"title":"评价重点是排序质量与校准","html":"<p>可用召回率、风险校准和前若干管段命中率评价；工程端还要统计漏检高后果缺陷的代价。</p>"},"fails":[{"name":"坐标错位","why":"环境和内检测单元无法正确关联。"},{"name":"概率误读","why":"相对风险被误当成真实失效频率。"}]},
+    "demo":{"label":"案例演示","intro":"改变壁厚损失与特征路径，观察风险矩阵和复检数量。","mode":"page","html":"demo/index.html","height":740}},
+  "references":[{"name":"PHMSA Pipeline Corrosion Report","href":"https://www.phmsa.dot.gov/sites/phmsa.dot.gov/files/docs/technical-resources/pipeline/gas-distribution-integrity-management/65996/finalreportpipelinecorrosion.pdf"},{"name":"PHMSA Integrity Assessment Fact Sheet","href":"https://primis.phmsa.dot.gov/stakeholder-comms/factsheets/FSIntegrityAssessment/"}]
+}

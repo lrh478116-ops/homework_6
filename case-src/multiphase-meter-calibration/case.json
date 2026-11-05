@@ -1,0 +1,20 @@
+{
+  "id":"multiphase-meter-calibration","sceneId":"t4","title":"油气计量智能校正：工况特征驱动的偏差补偿","version":"1.0.0","updated":"2026-11-05","methods":["ts"],
+  "tabs":{"background":{"label":"专业背景","lede":"油、气、水混合流的相态与流型会改变仪表响应。智能校正的价值是用工况特征估计系统偏差，同时保留参考真值、误差和适用域。",
+    "judge":[{"label":"石油对象","value":"油气多相流计量"},{"label":"AI 任务","value":"回归校正"},{"label":"决策输出","value":"校正流量 + 域外标记"},{"label":"证据边界","value":"独立标定前不可外推"}],
+    "sections":[
+      {"no":1,"en":"MULTIPHASE","title":"同一总流量可能对应不同仪表响应","html":"<p>含气率、温度和流型改变密度、压差与传感器响应。只用一个固定系数很难覆盖所有工况。</p>","visual":{"type":"layers","items":["油相","气相","水相","传感器响应"]}},
+      {"no":2,"en":"BIAS","title":"随机误差与系统偏差要分开","html":"<p>随机噪声围绕真值波动，系统偏差会随工况持续偏向一侧。校正模型主要学习后者。</p>","visual":{"type":"compare","left":"随机噪声：均值附近波动","right":"系统偏差：随工况漂移"}},
+      {"no":3,"en":"CALIBRATION","title":"校正需要独立参考与前后对照","html":"<p>以标定装置或可信参考表为监督信号，输入含气率、温度与漂移特征，输出偏差估计；随后比较原始和校正误差。</p>","visual":{"type":"flow","items":["原始读数 + 工况","偏差模型","补偿计算","校正读数"]}},
+      {"no":4,"en":"DOMAIN","title":"域外工况不能静默给出高置信结果","html":"<p>当含气率超出训练覆盖，模型仍能算出数值，却不具备同等级证据。页面必须显式标记域外并建议人工复核。</p>","visual":{"type":"boundary","items":["训练域：含气率≤82%","域外：仅供提示","需补充：新工况标定"]}}
+    ]},
+    "workflow":{"label":"案例流程","title":"从参考计量到在线偏差补偿","lead":["校正后的数字必须能追溯到参考真值和当前工况。"],"stats":[["输入","读数 + 工况"],["输出","校正流量"],["负向控制","关闭校正"]],
+      "steps":[
+        {"name":"建立标定样本","role":"计量工程","do":"同步采集仪表读数、参考真值、含气率和温度。","effect":"误差有可靠标签。","trap":"参考表自身未校准。","visual":{"input":"仪表 + 参考装置","process":"时间匹配","output":"标定样本"}},
+        {"name":"分解偏差特征","role":"数据分析","do":"计算相对误差并检查其随含气率、温度和时间的变化。","effect":"区分系统偏差与随机波动。","trap":"把泄漏或工况突变当成仪表偏差。","visual":{"input":"标定样本","process":"误差诊断","output":"偏差特征"}},
+        {"name":"学习校正函数","role":"回归模型","do":"用工况预测偏差，并在独立样本上比较 MAPE。","effect":"输出可计算的补偿量。","trap":"训练和测试混用同一时间段。","visual":{"input":"工况 + 偏差","process":"回归/验证","output":"偏差估计"}},
+        {"name":"在线校正与域检验","role":"计量决策","do":"应用补偿前先检查含气率是否在训练覆盖内。","effect":"校正值携带适用域状态。","trap":"域外仍显示正常绿色状态。","visual":{"input":"新读数 + 工况","process":"域检验 + 补偿","output":"校正值 + 警告"}}
+      ],"metrics":{"title":"必须报告校正前后同口径误差","html":"<p>MAPE、偏差均值和域外比例应在相同测试集上计算；只展示“改善百分比”会隐藏基准。</p>"},"fails":[{"name":"参考泄漏","why":"同一标定片段同时用于拟合和评估。"},{"name":"静默外推","why":"超出训练含气率却不给出警告。"}]},
+    "demo":{"label":"案例演示","intro":"改变含气率和漂移，观察校正前后 MAPE 与域外提示。","mode":"page","html":"demo/index.html","height":740}},
+  "references":[{"name":"IEEE Sensors Journal multiphase temporal metering","href":"https://doi.org/10.1109/JSEN.2026.3683143"},{"name":"Measurement deep-learning multiphase meter","href":"https://doi.org/10.1016/j.measurement.2022.112254"}]
+}

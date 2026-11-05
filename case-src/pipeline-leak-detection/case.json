@@ -1,0 +1,35 @@
+{
+  "id": "pipeline-leak-detection",
+  "sceneId": "t1",
+  "title": "管道泄漏智能检测：质量平衡与时序确认",
+  "version": "1.0.0",
+  "updated": "2026-11-05",
+  "methods": ["ts"],
+  "tabs": {
+    "background": {
+      "label": "专业背景",
+      "lede": "输油气管道泄漏会同时改变进出口流量、压力及其传播关系。案例把可解释的质量平衡残差作为业务量，再用时序异常检测把连续偏离转成报警。",
+      "judge": [{"label":"石油对象","value":"输油气管道"},{"label":"AI 任务","value":"时序异常检测"},{"label":"决策输出","value":"报警与延迟"},{"label":"证据边界","value":"合成数据验证"}],
+      "sections": [
+        {"no":1,"en":"MASS BALANCE","title":"为什么进出口流量差能提示泄漏","html":"<p>稳态近似下，入口流量应等于出口流量与管存变化之和。若管存变化已被补偿，持续增大的差值就是需要解释的异常。</p>","visual":{"type":"flow","items":["入口流量 Qin","管存补偿 ΔS","出口流量 Qout","残差 r=Qin−Qout−ΔS"]}},
+        {"no":2,"en":"SIGNAL","title":"单点波动不等于事故","html":"<p>阀门动作、启停和传感器噪声都可能制造尖峰。模型要识别持续结构变化，而不是把每个尖峰都当成泄漏。</p>","visual":{"type":"compare","left":"单点尖峰：可能是噪声","right":"连续偏离：更值得报警"}},
+        {"no":3,"en":"AI ROLE","title":"健康基线如何变成异常分数","html":"<p>用无泄漏窗口估计残差均值和标准差，再把当前残差换算为标准化异常分数。连续多个点超过阈值才确认报警。</p>","visual":{"type":"formula","items":["健康窗口 μ, σ","z=(r−μ)/σ","连续 k 点 z>阈值","输出报警时间"]}},
+        {"no":4,"en":"BOUNDARY","title":"能演示什么，不能证明什么","html":"<p>演示说明阈值、连续确认和信噪比之间的关系；合成数据上的延迟不能外推为真实管线性能，现场还需水击、工况切换和通信延迟测试。</p>","visual":{"type":"boundary","items":["可验证：计算链与反事实","未验证：现场误报率","需补充：真实历史事件与盲测"]}}
+      ]
+    },
+    "workflow": {
+      "label":"案例流程","title":"从传感器到可追溯报警","lead":["每一步都保留输入、处理和输出，避免只展示一个不可解释的红灯。"],
+      "stats":[["采样通道","入口/出口流量"],["模型形式","基线标准化"],["负向控制","单点触发"]],
+      "steps":[
+        {"name":"同步与质控","role":"数据工程","do":"对齐入口、出口时间戳，标记缺测与量程外值。","effect":"残差来自同一物理时刻。","trap":"时间偏移会伪造质量不平衡。","visual":{"input":"双端传感器","process":"时间对齐 + 质控","output":"可信时序"}},
+        {"name":"构造质量平衡残差","role":"石油机理","do":"计算入口−出口−管存变化，保留物理单位。","effect":"把多通道压缩为可解释业务信号。","trap":"忽略管存变化会在启停阶段误报。","visual":{"input":"Qin、Qout、ΔS","process":"守恒计算","output":"残差 r(t)"}},
+        {"name":"计算异常分数","role":"时序模型","do":"用健康窗口估计基线，将残差标准化。","effect":"不同流量区间可在同一尺度比较。","trap":"把泄漏段混入基线会稀释异常。","visual":{"input":"健康窗口 + r(t)","process":"标准化","output":"异常分数 z(t)"}},
+        {"name":"时序确认与复核","role":"运行决策","do":"要求连续越阈，再回看压力与工况事件。","effect":"报警具备时间、阈值和证据链。","trap":"只凭单点分数直接停输。","visual":{"input":"z(t) + 阈值","process":"连续 k 点 + 复核","output":"报警/未报警"}}
+      ],
+      "metrics":{"title":"评价泄漏检测不能只看是否报警","html":"<p>至少同时报告检测延迟、事前误报、漏检和适用工况。演示把越阈点与正式报警次数分开。</p>"},
+      "fails":[{"name":"时钟漂移","why":"上下游时间未对齐会制造假残差。"},{"name":"工况切换污染","why":"启停段进入健康基线会破坏阈值。"}]
+    },
+    "demo":{"label":"案例演示","intro":"拖动泄漏、噪声与阈值，观察真实重新计算的报警结果。","mode":"page","html":"demo/index.html","height":760}
+  },
+  "references":[{"name":"PHMSA Leak Detection Systems Fact Sheet","href":"https://primis.phmsa.dot.gov/stakeholder-comms/factsheets/fsleakdetectionsystems/"},{"name":"Machine-learning pipeline leak detection study","href":"https://doi.org/10.1016/j.jngse.2021.104134"}]
+}

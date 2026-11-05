@@ -1,0 +1,20 @@
+{
+  "id":"gathering-network-optimization","sceneId":"t3","title":"集输系统工况优化：约束下的泵阀协同","version":"1.0.0","updated":"2026-11-05","methods":["opt"],
+  "tabs":{"background":{"label":"专业背景","lede":"油气从多个井口进入汇管、分离与增压设备。泵速和阀位改变输量、压力和能耗，因此推荐工况必须同时满足设备与安全边界。",
+    "judge":[{"label":"石油对象","value":"井组—汇管—泵站"},{"label":"AI 任务","value":"约束优化"},{"label":"决策输出","value":"泵速与阀位"},{"label":"证据边界","value":"简化代理模型"}],
+    "sections":[
+      {"no":1,"en":"NETWORK","title":"集输不是一台泵的单变量问题","html":"<p>多井来液在汇管处耦合，阀门阻力与泵提供的压头共同决定流量分配。局部调整会沿网络传播。</p>","visual":{"type":"network","items":["井 1/2/3","汇管","调节阀","泵站","外输"]}},
+      {"no":2,"en":"PUMP CURVE","title":"流量、压力与能耗互相制约","html":"<p>提高泵速通常增加输量和压力，也使能耗快速上升；过度节流会把能量耗在阀门上。</p>","visual":{"type":"compare","left":"更高泵速：输量↑ 能耗↑","right":"更小阀位：阻力↑ 压差↑"}},
+      {"no":3,"en":"OPTIMIZATION","title":"优化目标必须带着可行域","html":"<p>算法在候选泵速和阀位中最小化能耗，同时检查最低输量和最高压力。不可行解即使目标值好也不能执行。</p>","visual":{"type":"formula","items":["目标：最小能耗","约束：流量≥目标","约束：压力≤上限","输出：可执行工况"]}},
+      {"no":4,"en":"BOUNDARY","title":"模型是决策支持，不是自动控制器","html":"<p>演示采用简化代理曲线。上线前需接入真实泵曲线、管网水力模型、设备状态与安全联锁，并经过操作规程审批。</p>","visual":{"type":"boundary","items":["可验证：约束改变解","未验证：真实能耗节省","需补充：水力模型与联锁"]}}
+    ]},
+    "workflow":{"label":"案例流程","title":"从工况快照到可执行推荐","lead":["先定义可行性，再谈最优性。"],"stats":[["决策变量","泵速 + 阀位"],["硬约束","流量/压力"],["负向控制","关闭约束"]],
+      "steps":[
+        {"name":"采集网络状态","role":"运行数据","do":"读取井口流量、汇管压力、泵速与阀位。","effect":"形成同一时刻的工况快照。","trap":"混用不同时间片的数据。","visual":{"input":"SCADA 多点数据","process":"同步 + 质控","output":"工况快照"}},
+        {"name":"建立工况代理","role":"机理/数据融合","do":"用泵曲线和历史数据近似流量、压力、能耗。","effect":"能快速评估候选动作。","trap":"外推到未覆盖的泵速区间。","visual":{"input":"设备曲线 + 历史","process":"代理建模","output":"Q/P/E 预测"}},
+        {"name":"约束搜索","role":"优化算法","do":"枚举泵速和阀位，过滤违反流量或压力的候选。","effect":"最优解同时满足边界。","trap":"把罚分过小导致违规解胜出。","visual":{"input":"候选动作","process":"目标 + 硬约束","output":"可行最优解"}},
+        {"name":"操作确认","role":"运行决策","do":"展示推荐值、预期工况和约束裕度，由操作员确认。","effect":"动作进入可追踪执行流程。","trap":"只展示节能百分比，不展示绝对边界。","visual":{"input":"推荐工况","process":"联锁/人工确认","output":"执行或驳回"}}
+      ],"metrics":{"title":"最优解首先要可执行","html":"<p>报告能耗时必须同时给出流量达标、压力裕度和约束违反数；不可行的节能结果不计入收益。</p>"},"fails":[{"name":"忽略约束","why":"得到低能耗但产量不足或超压的解。"},{"name":"代理模型漂移","why":"设备老化后预测曲线不再代表当前系统。"}]},
+    "demo":{"label":"案例演示","intro":"调整目标输量和压力上限，比较启用/关闭约束的推荐。","mode":"page","html":"demo/index.html","height":740}},
+  "references":[{"name":"U.S. DOE Improving Pumping System Performance","href":"https://www1.eere.energy.gov/manufacturing/tech_assistance/pdfs/pump.pdf"},{"name":"U.S. DOE Pump Systems","href":"https://www.energy.gov/cmei/ito/pump-systems"}]
+}
