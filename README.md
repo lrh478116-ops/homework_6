@@ -29,6 +29,17 @@ GitHub Pages：<https://lrh478116-ops.github.io/homework_6/>
 - 构建与验证脚本：[`tools/`](tools/) 与 [`tests/`](tests/)
 - 验收记录：[`SUBMISSION_CHECKLIST.md`](SUBMISSION_CHECKLIST.md)
 
+结课报告已根据五次作业重写为“可视化课程结课报告：五次作业的可视化实现与学习总结”，共 10 页（封面 1 页、正文与附录 9 页）。重点分析布局实验、AI 效率对比、FrameFlow 数据联动、可视化编码实验以及石油案例图示，配有 7 幅图和实现索引。为保持提交链接不变，沿用原 PDF 文件名；其他提交文件未随本次报告修订而改变。
+
+报告重建与结构检查（需要 Python、ReportLab、Pillow、pypdf、pdfplumber，以及 Windows 微软雅黑字体）：
+
+```powershell
+python tools/create_report.py
+python tests/validate_report.py
+```
+
+结构检查不代替逐页视觉检查，也不代表重新验收五个历史网站。
+
 ## 本地运行
 
 直接打开 `dist/index.html` 即可。若浏览器对本地 `file://` 的脚本策略较严格，可在仓库根目录运行：
